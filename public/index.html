@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panadería La Desesperanza</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<section class="hero">
+    <h1>Panadería La Desesperanza</h1>
+    <p>Productos artesanales con tradición</p>
+</section>
+
+<header>
+    <h1>Productos de la Panadería La Desesperanza</h1>
+</header>
+<main>
+    <!-- Sección principal de contenido -->
+    <section class="content">
+        <form id="addProductForm">
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" class="form-control" id="nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea class="form-control" id="descripcion" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="precio">Precio</label>
+                <input type="number" class="form-input" id="precio" required>
+            </div>
+            <div class="form-group">
+                <label for="stock">Stock</label>
+                <input type="number" class="form-input" id="stock" required>
+            </div>
+            <div class="form-group">
+                <label for="imagen">Imagen URL</label>
+                <input type="text" class="form-input" id="imagen">
+            </div>
+            <button type="submit" class="btn_agregar">Agregar</button>
+        </form>
+        <div id="productos"></div>
+    </section>
+
+    <!-- Aside con información adicional -->
+    <aside id="aside">
+        <h2>Ofertas de Temporada</h2>
+        <p><strong>Pan de muerto:</strong> ¡Compra 3 y lleva 1 gratis!</p>
+        <p><strong>Conchas de sabores:</strong> A solo $5 por Halloween.</p>
+        <h2>Horario</h2>
+        <p>Lunes a Viernes: 7:00 AM - 7:00 PM</p>
+        <p>Sábados y Domingos: 8:00 AM - 6:00 PM</p>
+    </aside>
+</main>
+<script src="script.js"></script>
+</body>
+</html>

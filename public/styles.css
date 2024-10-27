@@ -1,0 +1,234 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #FFFFFF; /* Color de fondo */
+    color: #6B4F4F; /* Color de texto */
+}
+
+/* Hero Section */
+.hero {
+    background-image: url('https://eldiariony.com/wp-content/uploads/sites/2/2021/09/Tipos-de-pan.jpg?w=2600');
+    background-size: cover;
+    background-position: center;
+    height: 100vh; /* 100% de la altura de la ventana */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #15100b;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.hero p {
+    font-size: 1.5rem;
+    font-weight: 300;
+}
+
+/* Header */
+header {
+    background-color: #F8CBA6; /* Color de encabezado */
+    color: #6B4F4F; /* Color de texto en encabezado */
+    padding: 1rem;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2rem;
+}
+
+/* Main Content */
+main {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+#productos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Formulario de productos */
+.content {
+    flex: 2;
+    background-color: #F8CBA6; /* Fondo de contenido */
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#addProductForm {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #6B4F4F; /* Color de las etiquetas */
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.btn_agregar {
+    display: inline-block;
+    background-color: #F2A900; /* Color de botón "Agregar" */
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn_agregar:hover {
+    background-color: #D48C00; /* Color al pasar el cursor */
+}
+
+/* Aside */
+aside {
+    flex: 1;
+    background-color: #E1B7A1; /* Fondo del aside */
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+aside h2 {
+    color: #6B4F4F; /* Color de encabezados del aside */
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+aside p {
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    main {
+        flex-direction: column;
+    }
+
+    aside, .content {
+        padding: 1rem;
+    }
+}
+
+/* Estilos para las tarjetas de productos */
+.card {
+    background-color: #FFFFFF; /* Fondo de tarjeta */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+}
+
+.card h4 {
+    font-size: 1.5rem;
+    color: #6B4F4F; /* Color del título en tarjeta */
+    margin-bottom: 0.5rem;
+}
+
+.card p {
+    font-size: 1rem;
+    margin: 0.3rem 0;
+    color: #555; /* Color del texto en tarjeta */
+}
+
+.card img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+}
+
+.card button {
+    background-color: #F2A900; /* Color de botón en tarjeta */
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.card button:hover {
+    background-color: #D48C00; /* Color al pasar el cursor */
+}
+
+/* Estilos para el formulario de actualización */
+.div_actualizar_form {
+    background-color: #E1B7A1; /* Fondo del formulario de actualización */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    max-width: 400px;
+}
+
+.div_actualizar_form h4 {
+    font-size: 1.5rem;
+    color: #6B4F4F; /* Color del título del formulario de actualización */
+    margin-bottom: 1rem;
+}
+
+.div_actualizar_form input,
+.div_actualizar_form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.div_actualizar_form button {
+    background-color: #4CAF50; /* Color de botón de guardar */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.div_actualizar_form button:hover {
+    background-color: #45a049; /* Color al pasar el cursor */
+}
