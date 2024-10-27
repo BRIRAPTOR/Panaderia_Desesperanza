@@ -45,7 +45,7 @@ function crearProducto() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ nombre, descripcion, precio, stock, imagen }) // Eliminamos 'categoria'
+        body: JSON.stringify({ nombre, descripcion, precio, stock, imagen })
     })
         .then(response => response.text())
         .then(message => {
@@ -112,7 +112,7 @@ function actualizarProducto(id) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ nombre, descripcion, precio, stock, imagen }) // Eliminamos 'categoria'
+        body: JSON.stringify({ nombre, descripcion, precio, stock, imagen })
     })
         .then(response => response.text())
         .then(message => {

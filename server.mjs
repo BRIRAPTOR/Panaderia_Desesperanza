@@ -1,17 +1,17 @@
-const express = require('express');
-const cors = require('cors');
-const mysql = require('mysql2');
+import express from 'express';
+import cors from 'cors';
+import mysql from 'mysql2';
 
 const app = express();
 app.use(cors());
-app.use(express.json()); // Usando la opción nativa de express para JSON
+app.use(express.json());
 app.use(express.static('public'));
 
 const db = mysql.createConnection({
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: 'n0m3l0',
+    password: '',
     database: 'panaderia_desesperanza'
 });
 
@@ -27,8 +27,8 @@ db.connect(err => {
 
 // Crear Producto
 app.post('/productos', (req, res) => {
-    const { nombre, descripcion, precio, stock, imagen } = req.body; // Eliminamos 'categoria'
-    const query = 'INSERT INTO productos (nombre, descripcion, precio, stock, imagen) VALUES (?, ?, ?, ?, ?)'; // Eliminamos 'categoria'
+    const { nombre, descripcion, precio, stock, imagen } = req.body;
+    const query = 'INSERT INTO productos (nombre, descripcion, precio, stock, imagen) VALUES (?, ?, ?, ?, ?)';
 
     db.query(query, [nombre, descripcion, precio, stock, imagen], (err, results) => {
         if (err) return res.status(500).json({ error: 'Error en el servidor' });
@@ -47,8 +47,8 @@ app.get('/productos', (req, res) => {
 // Actualizar Producto
 app.put('/productos/:id', (req, res) => {
     const { id } = req.params;
-    const { nombre, descripcion, precio, stock, imagen } = req.body; // Eliminamos 'categoria'
-    const query = 'UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, imagen=? WHERE id=?'; // Eliminamos 'categoria'
+    const { nombre, descripcion, precio, stock, imagen } = req.body;
+    const query = 'UPDATE productos SET nombre=?, descripcion=?, precio=?, stock=?, imagen=? WHERE id=?';
 
     db.query(query, [nombre, descripcion, precio, stock, imagen, id], (err, results) => {
         if (err) return res.status(500).json({ error: 'Error en el servidor' });
