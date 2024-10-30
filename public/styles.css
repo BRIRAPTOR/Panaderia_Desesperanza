@@ -39,8 +39,8 @@ body {
 
 /* Header */
 header {
-    background-color: #F8CBA6; /* Color de encabezado */
-    color: #6B4F4F; /* Color de texto en encabezado */
+    background-color: #C0523E; /* Color de encabezado */
+    color: #ffffff; /* Color de texto en encabezado */
     padding: 1rem;
     text-align: center;
 }
@@ -65,7 +65,7 @@ main {
 /* Formulario de productos */
 .content {
     flex: 2;
-    background-color: #F8CBA6; /* Fondo de contenido */
+    background-color: #fffbeb; /* Fondo de contenido */
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -101,7 +101,7 @@ textarea {
 
 .btn_agregar {
     display: inline-block;
-    background-color: #F2A900; /* Color de botón "Agregar" */
+    background-color: #A7E3D1; /* Color de botón "Agregar" */
     color: #fff;
     padding: 0.75rem 1.5rem;
     border: none;
@@ -111,13 +111,13 @@ textarea {
 }
 
 .btn_agregar:hover {
-    background-color: #D48C00; /* Color al pasar el cursor */
+    background-color: #A7E3D1; /* Color al pasar el cursor */
 }
 
 /* Aside */
 aside {
     flex: 1;
-    background-color: #E1B7A1; /* Fondo del aside */
+    background-color: #d4fffb; /* Fondo del aside */
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -177,7 +177,7 @@ aside p {
 }
 
 .card button {
-    background-color: #F2A900; /* Color de botón en tarjeta */
+    background-color: #A7E3D1; /* Color de botón en tarjeta */
     color: #fff;
     border: none;
     padding: 0.5rem 1rem;
@@ -190,7 +190,7 @@ aside p {
 }
 
 .card button:hover {
-    background-color: #D48C00; /* Color al pasar el cursor */
+    background-color: #A7E3D1; /* Color al pasar el cursor */
 }
 
 /* Estilos para el formulario de actualización */
@@ -232,3 +232,4 @@ aside p {
 .div_actualizar_form button:hover {
     background-color: #45a049; /* Color al pasar el cursor */
 }
+
