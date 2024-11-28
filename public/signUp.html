@@ -6,23 +6,24 @@
     <title>Registro</title>
 </head>
 <body>
-    <h2>Registro de Usuario</h2>
-    <form id="registroForm">
-        <input type="text" id="nombre_usuario" placeholder="Nombre de usuario" required><br>
-        <input type="email" id="correo" placeholder="Correo electrónico" required><br>
-        <input type="password" id="contrasena" placeholder="Contraseña" required><br>
-        <button type="submit">Registrar</button>
-    </form>
+<h2>Registro de Usuario</h2>
+<form id="registroForm">
+    <input type="text" id="nombre_usuario" placeholder="Nombre de usuario" required><br>
+    <input type="email" id="correo" placeholder="Correo electrónico" required><br>
+    <input type="password" id="contrasena" placeholder="Contraseña" required><br>
+    <button type="submit">Registrar</button>
+</form>
 
-    <script>
-        document.getElementById('registroForm').addEventListener('submit', async function (event) {
-            event.preventDefault();
-            alert("Hola");
-            const nombre_usuario = document.getElementById('nombre_usuario').value;
-            const correo = document.getElementById('correo').value;
-            const contrasena = document.getElementById('contrasena').value;
+<script>
+    document.getElementById('registroForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
 
-            const response = await fetch('/registro', {
+        const nombre_usuario = document.getElementById('nombre_usuario').value.trim();
+        const correo = document.getElementById('correo').value.trim();
+        const contrasena = document.getElementById('contrasena').value.trim();
+
+        try {
+            const response = await fetch('http://localhost:3000/registro', { // Cambia a tu URL si es necesario
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -30,9 +31,27 @@
                 body: JSON.stringify({ nombre_usuario, correo, contrasena }),
             });
 
-            const data = await response.json();
-            alert(data.message || 'Registro exitoso');
-        });
-    </script>
+            if (!response.ok) {
+                // Procesa errores (400, 500, etc.)
+                const errorText = await response.text();
+                alert(errorText || 'Error desconocido');
+                return;
+            }
+
+            // Verifica si la respuesta es JSON
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                alert(data.message || 'Registro exitoso');
+            } else {
+                const text = await response.text();
+                alert(text || 'Registro exitoso');
+            }
+        } catch (error) {
+            console.error('Error al enviar la solicitud:', error);
+            alert('Error de conexión. Inténtalo de nuevo.');
+        }
+    });
+</script>
 </body>
 </html>

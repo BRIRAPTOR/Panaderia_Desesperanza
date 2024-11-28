@@ -43,25 +43,6 @@
                 </div>
                 <button type="submit" class="btn_agregar">Agregar</button>
             </form>
-            <h2>Historial de Compras</h2>
-            <div id="historial"></div>
-
-            <script>
-                async function cargarHistorial() {
-                    const response = await fetch('/historial');
-                    const historial = await response.json();
-
-                    document.getElementById('historial').innerHTML = historial.map(compra => `
-                 <div>
-                    <p>Fecha: ${compra.fecha}</p>
-                    <p>Total: ${compra.total}</p>
-                    <p>Número de Venta: ${compra.numero_venta}</p>
-                </div>
-                `).join('');
-                }
-
-                cargarHistorial();
-            </script>
 
             <div id="productos"></div>
 

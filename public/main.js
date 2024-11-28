@@ -14,6 +14,7 @@ function cargarProductos() {
                     <img src="${producto.imagen}" alt="${producto.nombre}">
                     <button onclick="addProductToCar(${producto.id})">Agregar al carrito</button>
                     <button onclick="buyNow(${producto.id})">Comprar ahora</button>
+                    
                 </div>
             `).join('');
             productosDiv.innerHTML = productosHTML;
