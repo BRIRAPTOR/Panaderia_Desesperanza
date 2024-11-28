@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de sesión</title>
+</head>
+<body>
+    <h2>Iniciar sesión</h2>
+    <form id="loginForm">
+        <input type="text" id="nombre_usuario" placeholder="Nombre de usuario" required><br>
+        <input type="password" id="contrasena" placeholder="Contraseña" required><br>
+        <button type="submit">Iniciar sesión</button>
+    </form>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            
+            const nombre_usuario = document.getElementById('nombre_usuario').value;
+            const contrasena = document.getElementById('contrasena').value;
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nombre_usuario, contrasena }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert('Inicio de sesión exitoso');
+                // Almacenar token de acceso en el almacenamiento local o en una cookie
+                localStorage.setItem('token', data.token);
+            } else {
+                alert('Usuario o contraseña incorrectos');
+            }
+        });
+    </script>
+</body>
+</html>

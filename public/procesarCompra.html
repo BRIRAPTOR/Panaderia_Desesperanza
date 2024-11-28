@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprar</title>
+</head>
+<body>
+    <h2>Proceso de Compra</h2>
+    <button onclick="procesarCompra()">Comprar</button>
+
+    <script>
+        const token = localStorage.getItem('token');
+
+        async function procesarCompra() {
+            if (!token) {
+                alert('Debes iniciar sesión para realizar la compra.');
+                return;
+            }
+
+            const usuario_id = 1; // Obtener el usuario del token o contexto
+
+            const response = await fetch('/comprar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ usuario_id }),
+            });
+
+            if (response.ok) {
+                alert('Compra realizada con éxito');
+            } else {
+                alert('Error al procesar la compra');
+            }
+        }
+    </script>
+</body>
+</html>

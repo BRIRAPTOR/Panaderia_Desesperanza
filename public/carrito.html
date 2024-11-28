@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito</title>
+</head>
+<body>
+    <h2>Productos</h2>
+    <!-- Aquí podrías listar los productos disponibles -->
+    <div id="productos">
+        <!-- Ejemplo de producto -->
+        <div>
+            <span>Pan de chocolate</span>
+            <button onclick="agregarAlCarrito(1, 1)">Agregar al carrito</button>
+        </div>
+    </div>
+
+    <h3>Carrito</h3>
+    <div id="carrito"></div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        
+        async function agregarAlCarrito(producto_id, cantidad) {
+            if (!token) {
+                alert('Debes iniciar sesión para agregar al carrito.');
+                return;
+            }
+
+            const usuario_id = 1; // Aquí se debería obtener el usuario desde el backend, por ejemplo, decodificando el token
+
+            const response = await fetch('/carrito', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ usuario_id, producto_id, cantidad }),
+            });
+
+            if (response.ok) {
+                alert('Producto agregado al carrito');
+                mostrarCarrito(usuario_id);
+            } else {
+                alert('Error al agregar producto al carrito');
+            }
+        }
+
+        async function mostrarCarrito(usuario_id) {
+            const response = await fetch(`/carrito?usuario_id=${usuario_id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+            });
+
+            const carrito = await response.json();
+            const carritoDiv = document.getElementById('carrito');
+            carritoDiv.innerHTML = '';
+            carrito.forEach(item => {
+                carritoDiv.innerHTML += `<div>${item.nombre_producto} - Cantidad: ${item.cantidad}</div>`;
+            });
+        }
+    </script>
+</body>
+</html>
