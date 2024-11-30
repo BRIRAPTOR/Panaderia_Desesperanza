@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import mysql from 'mysql2/promise'; // Usamos modo promesas para manejar consultas
+import mysql from 'mysql2';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -14,9 +14,9 @@ const db = mysql.createPool({
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: '',
+    password: 'n0m3l0',
     database: 'panaderia_desesperanza',
-});
+}).promise();  // Usamos promesas para la conexión
 
 // Función para manejar errores en rutas asíncronas
 const asyncHandler = (fn) => (req, res, next) => {
@@ -87,7 +87,7 @@ app.post('/registro', async (req, res) => {
         const hash = await bcrypt.hash(contrasena, 10);
 
         // Insertar el nuevo usuario en la base de datos
-        const [result] = await db.promise().query(
+        const [result] = await db.query(
             'INSERT INTO usuarios (nombre_usuario, correo, contrasena) VALUES (?, ?, ?)',
             [nombre_usuario, correo, hash]
         );
@@ -95,7 +95,6 @@ app.post('/registro', async (req, res) => {
         // Respuesta exitosa
         res.status(201).json({ message: 'Usuario registrado correctamente.', id: result.insertId });
     } catch (error) {
-        // Manejo de errores
         console.error('Error al registrar usuario:', error);
 
         // Si el correo o usuario ya existe
@@ -103,11 +102,9 @@ app.post('/registro', async (req, res) => {
             return res.status(400).json({ error: 'El nombre de usuario o correo ya está registrado.' });
         }
 
-        // Otros errores
         res.status(500).json({ error: 'Error interno del servidor.' });
     }
 });
-
 
 // Inicio de sesión
 app.post('/login', asyncHandler(async (req, res) => {
@@ -148,11 +145,7 @@ app.post('/comprar', asyncHandler(async (req, res) => {
     const [usuarios] = await db.query('SELECT fondos FROM usuarios WHERE id = ?', [usuario_id]);
     const fondosUsuario = usuarios[0];
 
-    const [carrito] = await db.query(`
-        SELECT c.*, p.precio 
-        FROM carrito c 
-        JOIN productos p ON c.producto_id = p.id 
-        WHERE c.usuario_id = ?`, [usuario_id]);
+    const [carrito] = await db.query(`SELECT c.*, p.precio FROM carrito c JOIN productos p ON c.producto_id = p.id WHERE c.usuario_id = ?`, [usuario_id]);
 
     if (!carrito.length) return res.status(400).send('El carrito está vacío.');
 
@@ -164,8 +157,7 @@ app.post('/comprar', asyncHandler(async (req, res) => {
 
     await db.query('UPDATE usuarios SET fondos = fondos - ? WHERE id = ?', [total, usuario_id]);
 
-    const [compra] = await db.query('INSERT INTO historial_compras (usuario_id, total) VALUES (?, ?)',
-        [usuario_id, total]);
+    const [compra] = await db.query('INSERT INTO historial_compras (usuario_id, total) VALUES (?, ?)', [usuario_id, total]);
 
     for (const item of carrito) {
         await db.query(

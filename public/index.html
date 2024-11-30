@@ -20,32 +20,32 @@
     <main>
         <!-- Sección principal de contenido -->
         <section class="content">
-            <form id="addProductForm">
-                <div class="form-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" required>
-                </div>
-                <div class="form-group">
-                    <label for="descripcion">Descripción</label>
-                    <textarea class="form-control" id="descripcion" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="precio">Precio</label>
-                    <input type="number" class="form-input" id="precio" required>
-                </div>
-                <div class="form-group">
-                    <label for="stock">Stock</label>
-                    <input type="number" class="form-input" id="stock" required>
-                </div>
-                <div class="form-group">
-                    <label for="imagen">Imagen URL</label>
-                    <input type="text" class="form-input" id="imagen">
-                </div>
-                <button type="submit" class="btn_agregar">Agregar</button>
-            </form>
-
             <div id="productos"></div>
+            <script>
+                // Cargar todos los productos
+                function cargarProductos() {
+                    fetch('/productos')
+                        .then(response => response.json())
+                        .then(data => {
+                            const productosDiv = document.getElementById('productos');
+                            productosDiv.innerHTML = '';
+                            const productosHTML = data.map(producto => `
+                            <div class="card">
+                                <h4>${producto.nombre}</h4>
+                                <p>${producto.descripcion}</p>
+                                <p>Precio: $${producto.precio}</p>
+                                <p>Stock: ${producto.stock}</p>
+                                <img src="${producto.imagen}" alt="${producto.nombre}">
+                                <button onclick="addProductToCar(${producto.id})">Agregar al carrito</button>
+                                <button onclick="buyNow(${producto.id})">Comprar ahora</button>                  
+                            </div>`).join('');
+                            productosDiv.innerHTML = productosHTML;
+                        }).catch(err => console.error('Error al cargar productos:', err));
+                }
 
+                // Cargar los productos al cargar la página
+                document.addEventListener('DOMContentLoaded', cargarProductos);
+            </script>
         </section>
 
         <!-- Aside con información adicional -->
@@ -58,7 +58,5 @@
             <p>Sábados y Domingos: 8:00 AM - 6:00 PM</p>
         </aside>
     </main>
-    <script src="script.js"></script>
 </body>
-
 </html>
