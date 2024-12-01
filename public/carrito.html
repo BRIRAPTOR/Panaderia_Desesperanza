@@ -18,9 +18,8 @@
 
 <div class="message" id="message"></div>
 
-<!-- Incluir script jwt-decode desde el CDN -->
-<script type="module">
-    import jwt_decode from 'https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.esm.js';
+
+<script>
 
     // Función para mostrar mensajes
     function showMessage(message, isError = false) {
@@ -29,61 +28,20 @@
         messageDiv.style.color = isError ? 'red' : 'green';
     }
 
-    // Función para obtener el ID del usuario
-    function getUserId(token) {
-        try {
-            const decoded = jwt_decode(token);
-            console.log('ID del usuario:', decoded.id);
-            return decoded.id;
-        } catch (err) {
-            console.error('Token inválido o expirado');
-            return null;
-        }
-    }
 
     document.getElementById('comprarBtn').addEventListener('click', async function () {
-        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
-
-        if (!token) {
-            showMessage('No se ha encontrado un token. Por favor, inicie sesión.', true);
-            return;
-        }
-
-        const userId = getUserId(token);
-
-        if (!userId) {
-            showMessage('Token inválido o expirado. Por favor, inicie sesión nuevamente.', true);
-            return;
-        }
 
         try {
             const response = await fetch('/comprar', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ userId }) // Usar el ID del usuario
             });
 
-            const contentType = response.headers.get('Content-Type');
-
             if (response.ok) {
-                if (contentType && contentType.includes('application/json')) {
-                    const data = await response.json();
-                    showMessage(data.message || 'Compra realizada con éxito');
-                } else {
                     const text = await response.text();
                     showMessage(text || 'Compra realizada con éxito');
-                }
             } else {
-                if (contentType && contentType.includes('application/json')) {
-                    const data = await response.json();
-                    showMessage(data.error || 'Error al procesar la compra', true);
-                } else {
                     const text = await response.text();
                     showMessage(text || 'Error al procesar la compra', true);
-                }
             }
         } catch (error) {
             console.error('Error al conectar con el servidor:', error);

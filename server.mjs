@@ -4,12 +4,13 @@ import mysql from 'mysql2';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
-
+app.use(cookieParser());
 dotenv.config();
 const dbPassword = process.env.DB_PASSWORD;
 
@@ -22,6 +23,7 @@ const db = mysql.createPool({
     database: 'panaderia_desesperanza',
 }).promise();  // Usamos promesas para la conexión
 
+
 // Función para manejar errores en rutas asíncronas
 const asyncHandler = (fn) => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
@@ -29,7 +31,7 @@ const asyncHandler = (fn) => (req, res, next) => {
 
 // Middleware para verificar el JWT
 const verifyToken = (req, res, next) => {
-    const token = req.headers['authorization']?.split(' ')[1]; // Obtener el token del encabezado Authorization
+    const token = req.cookies.token;// Obtener el token del encabezado Authorization
 
     if (!token) {
         return res.status(403).json({ error: 'Token no proporcionado.' });
@@ -43,7 +45,47 @@ const verifyToken = (req, res, next) => {
         next();
     });
 };
+app.post('/login', asyncHandler(async (req, res) => {
+    const { nombre_usuario, contrasena } = req.body;
 
+    try {
+        // Consulta a la base de datos para obtener el usuario
+        const [usuarios] = await db.query('SELECT * FROM usuarios WHERE nombre_usuario = ?', [nombre_usuario]);
+        const usuario = usuarios[0];
+
+        // Verifica si el usuario existe y si la contraseña es correcta
+        if (!usuario || !(await bcrypt.compare(contrasena, usuario.contrasena))) {
+            return res.status(401).send('Usuario o contraseña incorrectos.');
+        }
+
+        // Crea el token JWT
+        const token = jwt.sign(
+            {
+                id: usuario.id,
+                nombre: usuario.nombre_usuario,
+                rol: usuario.rol,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        // Envía la cookie con el token
+        return res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',  // Asegura que esté en HTTPS en producción
+            sameSite: 'Strict',  // Mejora la seguridad contra ataques CSRF
+            maxAge: 1000 * 60 * 60  // 1 hora de duración
+        }).status(200).send('Inicio de sesión exitoso.');
+    } catch (error) {
+        console.error('Error al realizar el inicio de sesión:', error);
+        return res.status(500).send('Error interno del servidor.');
+    }
+}));
+
+// Log out (Eliminación del token del cliente)
+app.post('/logout', verifyToken, (req, res) => {
+res.clearCookie('token').json({message: 'Logout successful.'}).status(200);
+});
 
 // CRUD - Productos
 // Crear Producto
@@ -100,9 +142,15 @@ app.post('/registro', async (req, res) => {
             return res.status(400).json({ error: 'El formato del correo no es válido.' });
         }
 
-        // Validar longitud de la contraseña
+        // Validar longitud de la contraseña (mínimo 6 caracteres, y podría agregar más validaciones)
         if (contrasena.length < 6) {
             return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres.' });
+        }
+
+        // Validar si el correo o el nombre de usuario ya existen en la base de datos
+        const [usuariosExistentes] = await db.query('SELECT * FROM usuarios WHERE correo = ? OR nombre_usuario = ?', [correo, nombre_usuario]);
+        if (usuariosExistentes.length > 0) {
+            return res.status(400).json({ error: 'El nombre de usuario o correo ya está registrado.' });
         }
 
         // Hashear la contraseña
@@ -115,33 +163,15 @@ app.post('/registro', async (req, res) => {
         );
 
         // Respuesta exitosa
-        res.status(201).json({ message: 'Usuario registrado correctamente.', id: result.insertId });
+        return res.status(201).json({
+            message: 'Usuario registrado correctamente.',
+            usuario: { id: result.insertId, nombre_usuario, correo }
+        });
     } catch (error) {
         console.error('Error al registrar usuario:', error);
-
-        // Si el correo o usuario ya existe
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ error: 'El nombre de usuario o correo ya está registrado.' });
-        }
-
         res.status(500).json({ error: 'Error interno del servidor.' });
     }
 });
-
-// Inicio de sesión
-app.post('/login', asyncHandler(async (req, res) => {
-    const { nombre_usuario, contrasena } = req.body;
-
-    const [usuarios] = await db.query('SELECT * FROM usuarios WHERE nombre_usuario = ?', [nombre_usuario]);
-    const usuario = usuarios[0];
-
-    if (!usuario || !(await bcrypt.compare(contrasena, usuario.contrasena))) {
-        return res.status(401).send('Usuario o contraseña incorrectos.');
-    }
-
-    const token = jwt.sign({ id: usuario.id, rol: usuario.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token });
-}));
 
 // Agregar producto al carrito
 app.post('/carrito', verifyToken, asyncHandler(async (req, res) => {
@@ -192,14 +222,11 @@ app.post('/comprar', verifyToken, asyncHandler(async (req, res) => {
     }
 
     await db.query('DELETE FROM carrito WHERE usuario_id = ?', [usuario_id]);
-    res.status(200).send('Compra realizada con éxito.');
+
+    res.status(200).send('Compra procesada exitosamente.');
 }));
 
-// Manejar rutas no encontradas
-app.use((req, res) => {
-    res.status(404).send('ERROR 404 NOT FOUND');
-});
-
+// Iniciar servidor
 app.listen(3000, () => {
-    console.log('Servidor corriendo en http://localhost:3000');
+    console.log('Servidor corriendo en puerto 3000');
 });

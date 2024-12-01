@@ -29,8 +29,7 @@
                     .then(response => response.json())
                     .then(data => {
                         const productosDiv = document.getElementById('productos');
-                        productosDiv.innerHTML = '';
-                        const productosHTML = data.map(producto => `
+                        productosDiv.innerHTML = data.map(producto => `
                             <div class="card">
                                 <h4>${producto.nombre}</h4>
                                 <p>${producto.descripcion}</p>
@@ -38,9 +37,8 @@
                                 <p>Stock: ${producto.stock}</p>
                                 <img src="${producto.imagen}" alt="${producto.nombre}">
                                 <button onclick="addProductToCar(${producto.id})">Agregar al carrito</button>
-                                <button onclick="buyNow(${producto.id})">Comprar ahora</button>                  
+                                <!--<button onclick="buyNow(${producto.id})">Comprar ahora</button>-->
                             </div>`).join('');
-                        productosDiv.innerHTML = productosHTML;
                     }).catch(err => console.error('Error al cargar productos:', err));
             }
 
@@ -48,20 +46,12 @@
             function addProductToCar(productoId) {
                 const cantidad = prompt('¿Cuántos deseas agregar al carrito?'); // Solicitar la cantidad
                 if (cantidad && !isNaN(cantidad) && cantidad > 0) {
-                    // Obtener el token JWT almacenado
-                    const token = localStorage.getItem('token');
-
-                    if (!token) {
-                        alert('Por favor inicia sesión primero.');
-                        return;
-                    }
 
                     // Hacer la solicitud POST para agregar al carrito
                     fetch('/carrito', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}` // Enviar el token en el encabezado
                         },
                         body: JSON.stringify({
                             producto_id: productoId,
@@ -76,7 +66,7 @@
                         })
                         .catch(err => {
                             console.error('Error al agregar producto al carrito:', err);
-                            alert('No se pudo agregar el producto al carrito.');
+                            alert('No se pudo agregar el producto al carrito. Por favor, inicia sesión.');
                         });
                 } else {
                     alert('Por favor ingresa una cantidad válida.');
@@ -87,34 +77,36 @@
             document.addEventListener('DOMContentLoaded', cargarProductos);
 
             document.getElementById('logoutBtn').addEventListener('click', async function () {
-                const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
 
-                if (!token) {
-                    showMessage('No estás conectado.', true);
-                    return;
-                }
 
                 try {
-                    const response = await fetch('/logout', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
+                    const response = await fetch('http://localhost:3000/logout', {
+                        method: 'POST'
                     });
 
                     if (response.ok) {
-                        localStorage.removeItem('token'); // Eliminar el token del almacenamiento local
                         showMessage('Sesión cerrada con éxito.');
+                        window.location.href = 'http://localhost:3000/login.html';
                     } else {
                         const data = await response.json();
-                        showMessage(data.error || 'Error al cerrar sesión.', true);
+                        showMessage(data.error || 'Error al cerrar sesión.', true); // Mostrar mensaje de error si no es exitosa
                     }
                 } catch (error) {
                     console.error('Error al cerrar sesión:', error);
-                    showMessage('Error al conectar con el servidor.', true);
-
+                    showMessage('Error al conectar con el servidor.', true); // Error de conexión con el servidor
                 }
             });
+
+            function showMessage(message, isError = false) {
+                const messageBox = document.createElement('div');
+                messageBox.textContent = message;
+                messageBox.style.color = isError ? 'red' : 'green';
+                document.body.appendChild(messageBox);
+
+                setTimeout(() => {
+                    messageBox.remove();
+                }, 3000);
+            }
 
         </script>
     </section>
@@ -125,8 +117,8 @@
         <p><strong>Pan de muerto:</strong> ¡Compra 3 y lleva 1 gratis!</p>
         <p><strong>Conchas de sabores:</strong> A solo $5 por Halloween.</p>
         <h2>Horario</h2>
-        <p>Lunes a Viernes: 7:00 AM - 7:00 PM</p>
-        <p>Sábados y Domingos: 8:00 AM - 6:00 PM</p>
+        <p>lunes a viernes: 7:00 AM - 7:00 PM</p>
+        <p>sábados y domingos: 8:00 AM - 6:00 PM</p>
     </aside>
 </main>
 </body>
