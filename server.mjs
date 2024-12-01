@@ -3,18 +3,22 @@ import cors from 'cors';
 import mysql from 'mysql2';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
+dotenv.config();
+const dbPassword = process.env.DB_PASSWORD;
+
 // Configuración de la conexión a la base de datos
 const db = mysql.createPool({
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: 'n0m3l0',
+    password: dbPassword,
     database: 'panaderia_desesperanza',
 }).promise();  // Usamos promesas para la conexión
 
@@ -22,6 +26,24 @@ const db = mysql.createPool({
 const asyncHandler = (fn) => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
 };
+
+// Middleware para verificar el JWT
+const verifyToken = (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1]; // Obtener el token del encabezado Authorization
+
+    if (!token) {
+        return res.status(403).json({ error: 'Token no proporcionado.' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ error: 'Token no válido.' });
+        }
+        req.user = decoded;  // Decodifica el token y adjunta la información del usuario a la solicitud
+        next();
+    });
+};
+
 
 // CRUD - Productos
 // Crear Producto
@@ -117,13 +139,14 @@ app.post('/login', asyncHandler(async (req, res) => {
         return res.status(401).send('Usuario o contraseña incorrectos.');
     }
 
-    const token = jwt.sign({ id: usuario.id, rol: usuario.rol }, process.env.JWT_SECRET || 'secreto', { expiresIn: '1h' });
+    const token = jwt.sign({ id: usuario.id, rol: usuario.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
 }));
 
 // Agregar producto al carrito
-app.post('/carrito', asyncHandler(async (req, res) => {
-    const { usuario_id, producto_id, cantidad } = req.body;
+app.post('/carrito', verifyToken, asyncHandler(async (req, res) => {
+    const { producto_id, cantidad } = req.body;
+    const usuario_id = req.user.id;  // Tomar el ID del usuario del token
 
     const [productos] = await db.query('SELECT * FROM productos WHERE id = ?', [producto_id]);
     const producto = productos[0];
@@ -139,8 +162,8 @@ app.post('/carrito', asyncHandler(async (req, res) => {
 }));
 
 // Procesar compra
-app.post('/comprar', asyncHandler(async (req, res) => {
-    const { usuario_id } = req.body;
+app.post('/comprar', verifyToken, asyncHandler(async (req, res) => {
+    const usuario_id = req.user.id;  // Tomar el ID del usuario del token
 
     const [usuarios] = await db.query('SELECT fondos FROM usuarios WHERE id = ?', [usuario_id]);
     const fondosUsuario = usuarios[0];

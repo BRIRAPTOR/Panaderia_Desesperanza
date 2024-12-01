@@ -9,27 +9,28 @@
 </head>
 
 <body>
-    <section class="hero">
-        <h1>Panadería La Desesperanza</h1>
-        <p>Productos artesanales con tradición</p>
-    </section>
+<section class="hero">
+    <h1>Panadería La Desesperanza</h1>
+    <p>Productos artesanales con tradición</p>
+</section>
 
-    <header>
-        <h1>Productos de la Panadería La Desesperanza</h1>
-    </header>
-    <main>
-        <!-- Sección principal de contenido -->
-        <section class="content">
-            <div id="productos"></div>
-            <script>
-                // Cargar todos los productos
-                function cargarProductos() {
-                    fetch('/productos')
-                        .then(response => response.json())
-                        .then(data => {
-                            const productosDiv = document.getElementById('productos');
-                            productosDiv.innerHTML = '';
-                            const productosHTML = data.map(producto => `
+<header>
+    <h1>Productos de la Panadería La Desesperanza</h1>
+</header>
+<main>
+    <!-- Sección principal de contenido -->
+    <section class="content">
+        <div id="productos"></div>
+        <button id="logoutBtn">Log out</button>
+        <script>
+            // Cargar todos los productos
+            function cargarProductos() {
+                fetch('/productos')
+                    .then(response => response.json())
+                    .then(data => {
+                        const productosDiv = document.getElementById('productos');
+                        productosDiv.innerHTML = '';
+                        const productosHTML = data.map(producto => `
                             <div class="card">
                                 <h4>${producto.nombre}</h4>
                                 <p>${producto.descripcion}</p>
@@ -39,24 +40,94 @@
                                 <button onclick="addProductToCar(${producto.id})">Agregar al carrito</button>
                                 <button onclick="buyNow(${producto.id})">Comprar ahora</button>                  
                             </div>`).join('');
-                            productosDiv.innerHTML = productosHTML;
-                        }).catch(err => console.error('Error al cargar productos:', err));
+                        productosDiv.innerHTML = productosHTML;
+                    }).catch(err => console.error('Error al cargar productos:', err));
+            }
+
+            // Función para agregar el producto al carrito
+            function addProductToCar(productoId) {
+                const cantidad = prompt('¿Cuántos deseas agregar al carrito?'); // Solicitar la cantidad
+                if (cantidad && !isNaN(cantidad) && cantidad > 0) {
+                    // Obtener el token JWT almacenado
+                    const token = localStorage.getItem('token');
+
+                    if (!token) {
+                        alert('Por favor inicia sesión primero.');
+                        return;
+                    }
+
+                    // Hacer la solicitud POST para agregar al carrito
+                    fetch('/carrito', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` // Enviar el token en el encabezado
+                        },
+                        body: JSON.stringify({
+                            producto_id: productoId,
+                            cantidad: parseInt(cantidad)
+                        })
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.text().then(text => { throw new Error(text) });
+                            }
+                            alert('Producto agregado al carrito');
+                        })
+                        .catch(err => {
+                            console.error('Error al agregar producto al carrito:', err);
+                            alert('No se pudo agregar el producto al carrito.');
+                        });
+                } else {
+                    alert('Por favor ingresa una cantidad válida.');
+                }
+            }
+
+            // Cargar los productos al cargar la página
+            document.addEventListener('DOMContentLoaded', cargarProductos);
+
+            document.getElementById('logoutBtn').addEventListener('click', async function () {
+                const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
+
+                if (!token) {
+                    showMessage('No estás conectado.', true);
+                    return;
                 }
 
-                // Cargar los productos al cargar la página
-                document.addEventListener('DOMContentLoaded', cargarProductos);
-            </script>
-        </section>
+                try {
+                    const response = await fetch('/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
 
-        <!-- Aside con información adicional -->
-        <aside id="aside">
-            <h2>Ofertas de Temporada</h2>
-            <p><strong>Pan de muerto:</strong> ¡Compra 3 y lleva 1 gratis!</p>
-            <p><strong>Conchas de sabores:</strong> A solo $5 por Halloween.</p>
-            <h2>Horario</h2>
-            <p>Lunes a Viernes: 7:00 AM - 7:00 PM</p>
-            <p>Sábados y Domingos: 8:00 AM - 6:00 PM</p>
-        </aside>
-    </main>
+                    if (response.ok) {
+                        localStorage.removeItem('token'); // Eliminar el token del almacenamiento local
+                        showMessage('Sesión cerrada con éxito.');
+                    } else {
+                        const data = await response.json();
+                        showMessage(data.error || 'Error al cerrar sesión.', true);
+                    }
+                } catch (error) {
+                    console.error('Error al cerrar sesión:', error);
+                    showMessage('Error al conectar con el servidor.', true);
+
+                }
+            });
+
+        </script>
+    </section>
+
+    <!-- Aside con información adicional -->
+    <aside id="aside">
+        <h2>Ofertas de Temporada</h2>
+        <p><strong>Pan de muerto:</strong> ¡Compra 3 y lleva 1 gratis!</p>
+        <p><strong>Conchas de sabores:</strong> A solo $5 por Halloween.</p>
+        <h2>Horario</h2>
+        <p>Lunes a Viernes: 7:00 AM - 7:00 PM</p>
+        <p>Sábados y Domingos: 8:00 AM - 6:00 PM</p>
+    </aside>
+</main>
 </body>
 </html>

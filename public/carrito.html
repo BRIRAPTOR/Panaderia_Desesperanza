@@ -1,63 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrito de Compras</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h2 {
-            color: #4CAF50;
-        }
-        form, .actions {
-            margin-bottom: 20px;
-        }
-        input, button {
-            margin: 5px 0;
-            padding: 10px;
-            font-size: 16px;
-        }
-        button {
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .message {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="carrito.css">
 </head>
+
 <body>
 <h2>Carrito de Compras</h2>
-
-<!-- Formulario para agregar productos al carrito -->
-<form id="addToCartForm">
-    <h3>Agregar al carrito</h3>
-    <input type="number" id="usuario_id" placeholder="ID del usuario" required><br>
-    <input type="number" id="producto_id" placeholder="ID del producto" required><br>
-    <input type="number" id="cantidad" placeholder="Cantidad" required><br>
-    <button type="submit">Agregar al carrito</button>
-</form>
-
 <!-- Botón para procesar la compra -->
 <div class="actions">
     <h3>Procesar Compra</h3>
-    <input type="number" id="usuario_compra_id" placeholder="ID del usuario" required><br>
     <button id="comprarBtn">Comprar</button>
 </div>
 
 <div class="message" id="message"></div>
 
-<script>
+<!-- Incluir script jwt-decode desde el CDN -->
+<script type="module">
+    import jwt_decode from 'https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.esm.js';
+
     // Función para mostrar mensajes
     function showMessage(message, isError = false) {
         const messageDiv = document.getElementById('message');
@@ -65,58 +29,68 @@
         messageDiv.style.color = isError ? 'red' : 'green';
     }
 
-    // Agregar producto al carrito
-    document.getElementById('addToCartForm').addEventListener('submit', async function (event) {
-        event.preventDefault();
-
-        const usuario_id = document.getElementById('usuario_id').value;
-        const producto_id = document.getElementById('producto_id').value;
-        const cantidad = document.getElementById('cantidad').value;
-
+    // Función para obtener el ID del usuario
+    function getUserId(token) {
         try {
-            const response = await fetch('/carrito', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usuario_id, producto_id, cantidad }),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                showMessage(data.message || 'Producto agregado al carrito con éxito');
-            } else {
-                showMessage(data.error || 'Error al agregar al carrito', true);
-            }
-        } catch (error) {
-            showMessage('Error al conectar con el servidor', true);
+            const decoded = jwt_decode(token);
+            console.log('ID del usuario:', decoded.id);
+            return decoded.id;
+        } catch (err) {
+            console.error('Token inválido o expirado');
+            return null;
         }
-    });
+    }
 
-    // Procesar compra
     document.getElementById('comprarBtn').addEventListener('click', async function () {
-        const usuario_id = document.getElementById('usuario_compra_id').value;
+        const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local
 
-        if (!usuario_id) {
-            showMessage('El ID del usuario es obligatorio', true);
+        if (!token) {
+            showMessage('No se ha encontrado un token. Por favor, inicie sesión.', true);
+            return;
+        }
+
+        const userId = getUserId(token);
+
+        if (!userId) {
+            showMessage('Token inválido o expirado. Por favor, inicie sesión nuevamente.', true);
             return;
         }
 
         try {
             const response = await fetch('/comprar', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usuario_id }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ userId }) // Usar el ID del usuario
             });
 
-            const data = await response.json();
+            const contentType = response.headers.get('Content-Type');
+
             if (response.ok) {
-                showMessage(data.message || 'Compra realizada con éxito');
+                if (contentType && contentType.includes('application/json')) {
+                    const data = await response.json();
+                    showMessage(data.message || 'Compra realizada con éxito');
+                } else {
+                    const text = await response.text();
+                    showMessage(text || 'Compra realizada con éxito');
+                }
             } else {
-                showMessage(data.error || 'Error al procesar la compra', true);
+                if (contentType && contentType.includes('application/json')) {
+                    const data = await response.json();
+                    showMessage(data.error || 'Error al procesar la compra', true);
+                } else {
+                    const text = await response.text();
+                    showMessage(text || 'Error al procesar la compra', true);
+                }
             }
         } catch (error) {
+            console.error('Error al conectar con el servidor:', error);
             showMessage('Error al conectar con el servidor', true);
         }
     });
 </script>
 </body>
+
 </html>
