@@ -16,32 +16,34 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `historial_compras`
+-- Table structure for table `usuarios`
 --
 
-DROP TABLE IF EXISTS `historial_compras`;
+DROP TABLE IF EXISTS `usuarios`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `historial_compras` (
+CREATE TABLE `usuarios` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `usuario_id` int NOT NULL,
-  `fecha` datetime DEFAULT CURRENT_TIMESTAMP,
-  `total` decimal(10,2) NOT NULL,
-  `numero_venta` varchar(20) DEFAULT NULL,
+  `nombre_usuario` varchar(50) NOT NULL,
+  `correo` varchar(100) NOT NULL,
+  `contrasena` varchar(255) NOT NULL,
+  `rol` enum('usuario','administrador') DEFAULT 'usuario',
+  `fondos` decimal(12,2) DEFAULT '0.00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `numero_venta` (`numero_venta`),
-  KEY `usuario_id` (`usuario_id`),
-  CONSTRAINT `historial_compras_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `nombre_usuario` (`nombre_usuario`),
+  UNIQUE KEY `correo` (`correo`),
+  CONSTRAINT `usuarios_chk_1` CHECK ((`fondos` between 0 and 999999999999))
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `historial_compras`
+-- Dumping data for table `usuarios`
 --
 
-LOCK TABLES `historial_compras` WRITE;
-/*!40000 ALTER TABLE `historial_compras` DISABLE KEYS */;
-/*!40000 ALTER TABLE `historial_compras` ENABLE KEYS */;
+LOCK TABLES `usuarios` WRITE;
+/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
+INSERT INTO `usuarios` VALUES (1,'briraptor','briraptor21@gmail.com','$2b$10$DgW86bJFbjLHPTj.7U7OFOsMZIKlcETRB262dRyDsnjysHdHNRME6','usuario',0.00),(3,'Brian Hazel','briraptor@gmail.com','$2b$10$4ooU7ugiVYA9Ep2YJfhIsOMhgc86KHY7TusBHo1pg5CfLtxD9bJUO','usuario',4444.00),(4,'Samantha','sami@gmail.com','$2b$10$Ny0lYaTUYiF8Ezl4goI88u4PksBOPBHcAfIp0Uc9JBoyEA4Bp6YkO','usuario',0.00);
+/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -53,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-28  1:44:33
+-- Dump completed on 2024-12-01 18:40:18

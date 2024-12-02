@@ -16,34 +16,29 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `usuarios`
+-- Table structure for table `clientes`
 --
 
-DROP TABLE IF EXISTS `usuarios`;
+DROP TABLE IF EXISTS `clientes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `usuarios` (
+CREATE TABLE `clientes` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `nombre_usuario` varchar(50) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
   `correo` varchar(100) NOT NULL,
-  `contrasena` varchar(255) NOT NULL,
-  `rol` enum('usuario','administrador') DEFAULT 'usuario',
-  `fondos` decimal(12,2) DEFAULT '0.00',
+  `telefono` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `nombre_usuario` (`nombre_usuario`),
-  UNIQUE KEY `correo` (`correo`),
-  CONSTRAINT `usuarios_chk_1` CHECK ((`fondos` between 0 and 999999999999))
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `correo` (`correo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `usuarios`
+-- Dumping data for table `clientes`
 --
 
-LOCK TABLES `usuarios` WRITE;
-/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'briraptor','briraptor21@gmail.com','$2b$10$DgW86bJFbjLHPTj.7U7OFOsMZIKlcETRB262dRyDsnjysHdHNRME6','usuario',0.00);
-/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
+LOCK TABLES `clientes` WRITE;
+/*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `clientes` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -55,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-28  1:44:33
+-- Dump completed on 2024-12-01 18:40:18

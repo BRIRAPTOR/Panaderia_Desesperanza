@@ -16,33 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `detalle_compras`
+-- Table structure for table `carrito`
 --
 
-DROP TABLE IF EXISTS `detalle_compras`;
+DROP TABLE IF EXISTS `carrito`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `detalle_compras` (
+CREATE TABLE `carrito` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `historial_id` int NOT NULL,
+  `usuario_id` int NOT NULL,
   `producto_id` int NOT NULL,
   `cantidad` int NOT NULL,
-  `precio_unitario` decimal(10,2) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `historial_id` (`historial_id`),
+  KEY `usuario_id` (`usuario_id`),
   KEY `producto_id` (`producto_id`),
-  CONSTRAINT `detalle_compras_ibfk_1` FOREIGN KEY (`historial_id`) REFERENCES `historial_compras` (`id`),
-  CONSTRAINT `detalle_compras_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `carrito_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
+  CONSTRAINT `carrito_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`),
+  CONSTRAINT `carrito_chk_1` CHECK ((`cantidad` > 0))
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `detalle_compras`
+-- Dumping data for table `carrito`
 --
 
-LOCK TABLES `detalle_compras` WRITE;
-/*!40000 ALTER TABLE `detalle_compras` DISABLE KEYS */;
-/*!40000 ALTER TABLE `detalle_compras` ENABLE KEYS */;
+LOCK TABLES `carrito` WRITE;
+/*!40000 ALTER TABLE `carrito` DISABLE KEYS */;
+/*!40000 ALTER TABLE `carrito` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -54,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-28  1:44:33
+-- Dump completed on 2024-12-01 18:40:17

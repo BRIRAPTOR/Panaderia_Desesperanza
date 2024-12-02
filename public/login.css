@@ -1,0 +1,101 @@
+/* Reseteo de CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilo del cuerpo */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(to right, #f5d78f, #f6ab63);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #4f3a24;
+}
+
+/* Título */
+h2 {
+    margin-bottom: 20px;
+    font-size: 2.2rem;
+    text-align: center;
+    color: #4f3a24;
+    font-weight: bold;
+}
+
+/* Formulario */
+form {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 400px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Campos de entrada */
+input {
+    width: 100%;
+    padding: 14px;
+    margin: 15px 0;
+    border: 2px solid #f5d78f;
+    border-radius: 10px;
+    font-size: 1rem;
+    color: #4f3a24;
+    background: rgba(255, 255, 255, 0.9);
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+input::placeholder {
+    color: #a5a5a5;
+}
+
+input:focus {
+    border-color: #f6ab63;
+    background: #fff;
+    outline: none;
+}
+
+/* Botón */
+button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(to right, #f6ab63, #f5d78f);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background: linear-gradient(to right, #f5d78f, #f6ab63);
+    transform: scale(1.03);
+}
+
+button:active {
+    transform: scale(1);
+}
+
+/* Estilo responsivo */
+@media (max-width: 480px) {
+    form {
+        padding: 30px;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    input,
+    button {
+        font-size: 0.9rem;
+    }
+}

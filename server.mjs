@@ -103,6 +103,18 @@ app.get('/productos', asyncHandler(async (req, res) => {
     const [productos] = await db.query('SELECT * FROM productos');
     res.json(productos);
 }));
+app.get('/productoscarrito', verifyToken, asyncHandler(async (req, res) => {
+    const user_id = req.user.id;
+    const [productos] = await db.query(
+        'SELECT c.usuario_id, c.producto_id, c.cantidad, p.nombre, p.descripcion, p.precio, p.imagen ' +
+        'FROM panaderia_desesperanza.carrito AS c ' +
+        'JOIN panaderia_desesperanza.productos AS p ON c.producto_id = p.id ' +
+        'WHERE c.usuario_id = ?',
+        [user_id]
+    );
+
+    res.json(productos);
+}));
 
 // Actualizar Producto
 app.put('/productos/:id', asyncHandler(async (req, res) => {
@@ -121,6 +133,16 @@ app.delete('/productos/:id', asyncHandler(async (req, res) => {
     const { id } = req.params;
 
     const [result] = await db.query('DELETE FROM productos WHERE id = ?', [id]);
+
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.send('Producto eliminado');
+}));
+
+app.delete('/productocarrito/:prod_id', verifyToken, asyncHandler(async (req, res) => {
+    const user_id = req.user.id;
+    const {prod_id} = req.params;
+
+    const result = await db.query('DELETE FROM panaderia_desesperanza.carrito where producto_id = ? and usuario_id = ?', [prod_id, user_id]);
 
     if (result.affectedRows === 0) return res.status(404).json({ error: 'Producto no encontrado' });
     res.send('Producto eliminado');

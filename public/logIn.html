@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio de sesión</title>
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
     <h2>Iniciar sesión</h2>
     <form id="loginForm">
+        <label for="nombre_usuario"></label>
         <input type="text" id="nombre_usuario" placeholder="Nombre de usuario" required><br>
+        <label for="contrasena"></label>
         <input type="password" id="contrasena" placeholder="Contraseña" required><br>
         <button type="submit">Iniciar sesión</button>
     </form>
@@ -29,10 +32,7 @@
             });
 
             if (response.ok) {
-                //const data = await response.json();
                 alert('Inicio de sesión exitoso');
-                // Almacenar token de acceso en el almacenamiento local o en una cookie
-                //localStorage.setItem('token', data);
             } else {
                 alert('Usuario o contraseña incorrectos');
             }

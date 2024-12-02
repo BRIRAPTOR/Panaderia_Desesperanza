@@ -11,6 +11,7 @@ body {
     line-height: 1.6;
     background-color: #FFFFFF; /* Color de fondo */
     color: #6B4F4F; /* Color de texto */
+    position: relative;
 }
 
 /* Hero Section */
@@ -48,6 +49,53 @@ header {
 header h1 {
     font-size: 2rem;
 }
+/* Estilos generales para el nav */
+nav {
+    background-color: #343a40; /* Fondo oscuro para el menú */
+    padding: 10px 20px; /* Espaciado interno */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil para destacar */
+    position: sticky; /* Hacer que el nav sea sticky */
+    top: 0; /* Se quedará fijo cuando llegue a la parte superior */
+    z-index: 1000; /* Asegura que el menú esté por encima de otros elementos */
+}
+
+/* Lista no ordenada */
+nav ul {
+    list-style-type: none; /* Eliminar viñetas */
+    margin: 0;
+    padding: 0;
+    display: flex; /* Alineación horizontal */
+    justify-content: space-around; /* Espaciado uniforme entre elementos */
+    align-items: center;
+}
+
+/* Elementos de lista */
+nav ul li {
+    margin: 0 10px; /* Separación horizontal entre enlaces */
+}
+
+/* Enlaces */
+nav ul li a {
+    color: #ffffff; /* Color de texto blanco */
+    text-decoration: none; /* Eliminar subrayado */
+    font-size: 16px; /* Tamaño del texto */
+    padding: 8px 12px; /* Espaciado interno para mayor área de clic */
+    border-radius: 4px; /* Bordes redondeados */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Animaciones suaves */
+}
+
+/* Efecto hover en enlaces */
+nav ul li a:hover {
+    background-color: #495057; /* Fondo más oscuro */
+    color: #ffd700; /* Texto dorado */
+}
+
+/* Enlaces activos */
+nav ul li a:active {
+    background-color: #212529; /* Fondo aún más oscuro */
+    color: #ffffff; /* Texto blanco */
+}
+
 
 /* Main Content */
 main {

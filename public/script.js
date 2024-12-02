@@ -135,5 +135,36 @@ function eliminarProducto(id) {
         .catch(err => console.error('Error al eliminar el producto:', err));
 }
 
+document.getElementById('logoutBtn').addEventListener('click', async function () {
+
+
+    try {
+        const response = await fetch('http://localhost:3000/logout', {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            showMessage('Sesión cerrada con éxito.');
+            window.location.href = 'http://localhost:3000/login.html';
+        } else {
+            const data = await response.json();
+            showMessage(data.error || 'Error al cerrar sesión.', true); // Mostrar mensaje de error si no es exitosa
+        }
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+        showMessage('Error al conectar con el servidor.', true); // Error de conexión con el servidor
+    }
+});
+
+function showMessage(message, isError = false) {
+    const messageBox = document.createElement('div');
+    messageBox.textContent = message;
+    messageBox.style.color = isError ? 'red' : 'green';
+    document.body.appendChild(messageBox);
+
+    setTimeout(() => {
+        messageBox.remove();
+    }, 3000);
+}
 // Cargar los productos al cargar la página
 document.addEventListener('DOMContentLoaded', cargarProductos);

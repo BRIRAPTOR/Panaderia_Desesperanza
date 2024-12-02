@@ -9,6 +9,7 @@
 </head>
 
 <body>
+
 <section class="hero">
     <h1>Panadería La Desesperanza</h1>
     <p>Productos artesanales con tradición</p>
@@ -17,11 +18,20 @@
 <header>
     <h1>Productos de la Panadería La Desesperanza</h1>
 </header>
+<nav>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="logIn.html">Log In</a></li>
+        <li><a href="signUp.html">Sign Up</a></li>
+        <li><a href="main.html">Main ROOT</a></li>
+        <li><a href="carrito.html">Carrito</a></li>
+        <li><button id="logoutBtn">Log out</button></li>
+    </ul>
+</nav>
 <main>
     <!-- Sección principal de contenido -->
     <section class="content">
         <div id="productos"></div>
-        <button id="logoutBtn">Log out</button>
         <script>
             // Cargar todos los productos
             function cargarProductos() {

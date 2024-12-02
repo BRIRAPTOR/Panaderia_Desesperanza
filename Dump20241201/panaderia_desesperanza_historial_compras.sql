@@ -16,29 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `clientes`
+-- Table structure for table `historial_compras`
 --
 
-DROP TABLE IF EXISTS `clientes`;
+DROP TABLE IF EXISTS `historial_compras`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `clientes` (
+CREATE TABLE `historial_compras` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `correo` varchar(100) NOT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
+  `usuario_id` int NOT NULL,
+  `fecha` datetime DEFAULT CURRENT_TIMESTAMP,
+  `total` decimal(10,2) NOT NULL,
+  `numero_venta` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `correo` (`correo`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `numero_venta` (`numero_venta`),
+  KEY `usuario_id` (`usuario_id`),
+  CONSTRAINT `historial_compras_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `clientes`
+-- Dumping data for table `historial_compras`
 --
 
-LOCK TABLES `clientes` WRITE;
-/*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `clientes` ENABLE KEYS */;
+LOCK TABLES `historial_compras` WRITE;
+/*!40000 ALTER TABLE `historial_compras` DISABLE KEYS */;
+INSERT INTO `historial_compras` VALUES (1,3,'2024-11-30 19:58:58',30.00,NULL),(2,3,'2024-11-30 23:13:59',60.00,NULL),(3,3,'2024-12-01 08:05:56',50.00,NULL),(4,3,'2024-12-01 10:12:11',75.00,NULL),(5,3,'2024-12-01 10:40:46',20.00,NULL),(6,3,'2024-12-01 10:51:36',36.00,NULL),(7,3,'2024-12-01 15:54:37',105.00,NULL),(8,3,'2024-12-01 18:20:40',180.00,NULL);
+/*!40000 ALTER TABLE `historial_compras` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -50,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-28  1:44:33
+-- Dump completed on 2024-12-01 18:40:18
