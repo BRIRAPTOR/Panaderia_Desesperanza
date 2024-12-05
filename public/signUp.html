@@ -24,7 +24,7 @@
         const contrasena = document.getElementById('contrasena').value.trim();
 
         try {
-            const response = await fetch('http://localhost:3000/registro', { // Cambia a tu URL si es necesario
+            const response = await fetch('/registro', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

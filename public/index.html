@@ -90,13 +90,13 @@
 
 
                 try {
-                    const response = await fetch('http://localhost:3000/logout', {
+                    const response = await fetch('/logout', {
                         method: 'POST'
                     });
 
                     if (response.ok) {
                         showMessage('Sesión cerrada con éxito.');
-                        window.location.href = 'http://localhost:3000/login.html';
+                        window.location.href = '/login.html';
                     } else {
                         const data = await response.json();
                         showMessage(data.error || 'Error al cerrar sesión.', true); // Mostrar mensaje de error si no es exitosa
