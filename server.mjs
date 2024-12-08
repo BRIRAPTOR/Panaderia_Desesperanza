@@ -128,9 +128,6 @@ app.post('/registro', async (req, res) => {
 // Rutas protegidas (productos, carrito, etc.)
 app.post('/productos', verifyToken, verifyAdmin, async (req, res) => {
     const { nombre, descripcion, precio, stock, imagen } = req.body;
-    if (req.user.rol == "usuario") {
-        return enviarError('Error, Requieres permisos de Administrador.');
-    }
 
     const query = 'INSERT INTO productos (nombre, descripcion, precio, stock, imagen) VALUES (?, ?, ?, ?, ?)';
     try {
@@ -237,7 +234,7 @@ app.get('/ticket/:numero_venta', verifyToken, async (req, res) => {
             return enviarError(res, 'Compra no encontrada o no pertenece al usuario.', 404);
         }
 
-        const { usuario_id, total, fecha, nombre_negocio } = compra[0];
+        const { total, fecha } = compra[0];
 
         // Obtener el detalle de la compra
         const [detalle] = await db.query(`
