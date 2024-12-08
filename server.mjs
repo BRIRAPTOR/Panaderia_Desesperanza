@@ -13,15 +13,20 @@ app.use(express.static('public'));
 app.use(cookieParser());
 dotenv.config();
 
+// Obtener las variables de entorno
+const dbHost = process.env.DB_HOST;
+const dbPort = process.env.DB_PORT;
+const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
+const dbName = process.env.DB_NAME;
 
 // Configuración de la conexión a la base de datos
 const db = mysql.createPool({
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
+    host: dbHost,
+    port: dbPort,
+    user: dbUser,
     password: dbPassword,
-    database: 'panaderia_desesperanza',
+    database: dbName,
 });
 
 // Función para manejar errores globalmente
