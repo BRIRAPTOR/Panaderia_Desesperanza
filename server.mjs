@@ -50,7 +50,6 @@ const verifyAdmin = (req, res, next) => {
     if (req.user.rol !== 'administrador') {
         return enviarError(res, 'Acceso no permitido.', 403);
     }
-    console.log(req.user.rol);
     next();
 };
 

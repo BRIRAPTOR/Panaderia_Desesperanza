@@ -66,10 +66,8 @@
 
     // Función para eliminar un producto del carrito
     async function removeProduct(id) {
-        fetch('/productocarrito/' + id, {method: 'DELETE'});
-        const cart = await getCartItems();
-        renderCart(cart);
-        updateTotal(cart);
+        await fetch('/productocarrito/' + id, {method: 'DELETE'});
+        await init();
     }
 
     // Función para renderizar los productos en el carrito
@@ -120,11 +118,12 @@
     });
 
     // Iniciar renderizado del carrito
-    (async function init() {
+    async function init() {
         const cart = await getCartItems();
         renderCart(cart);
         updateTotal(cart);
-    })();
+    }
+    init();
 </script>
 </body>
 
