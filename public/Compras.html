@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .pedido {
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .pedido h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .pedido p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Lista de Pedidos</h1>
+<div id="pedidos-container"></div>
+
+<script>
+
+    const apiUrl = '/historial-compras';
+
+    // Función para consumir la API
+    async function obtenerPedidos() {
+        try {
+            const response = await fetch(apiUrl);
+            const pedidos = await response.json();
+
+            // Seleccionamos el contenedor donde vamos a mostrar los pedidos
+            const pedidosContainer = document.getElementById('pedidos-container');
+
+            // Iteramos sobre cada pedido y lo mostramos en el frontend
+            pedidos.forEach(pedido => {
+                const pedidoDiv = document.createElement('div');
+                pedidoDiv.classList.add('pedido');
+
+                pedidoDiv.innerHTML = `
+                        <h3>Pedido ID: ${pedido.id}</h3>
+                        <p><strong>Total:</strong> $${pedido.total}</p>
+                        <p><strong>Fecha:</strong> ${new Date(pedido.fecha).toLocaleString()}</p>
+                        <p><strong>Nombre del Usuario:</strong> ${pedido.nombre_usuario}</p>
+                        <p><strong>Detalle:</strong> ${pedido.detalle}</p>
+                    `;
+
+                // Agregamos el pedido al contenedor
+                pedidosContainer.appendChild(pedidoDiv);
+            });
+        } catch (error) {
+            console.error('Error al obtener los pedidos:', error);
+        }
+    }
+
+    // Llamamos a la función para obtener los pedidos cuando cargue la página
+    obtenerPedidos();
+</script>
+
+</body>
+</html>

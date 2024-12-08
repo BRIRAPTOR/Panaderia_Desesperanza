@@ -220,6 +220,130 @@ app.delete('/productocarrito/:prod_id', verifyToken, async (req, res) => {
     }
 });
 
+// Generar ticket de compra
+app.get('/ticket/:numero_venta', verifyToken, async (req, res) => {
+    const { numero_venta } = req.params;
+
+    try {
+        // Obtener información básica de la compra
+        const [compra] = await db.query(`
+            SELECT hc.usuario_id, hc.total, hc.fecha, u.nombre_usuario
+            FROM historial_compras AS hc
+            JOIN usuarios AS u ON hc.usuario_id = u.id
+            WHERE hc.id = ? AND hc.usuario_id = ?
+        `, [numero_venta, req.user.id]);
+
+        if (!compra.length) {
+            return enviarError(res, 'Compra no encontrada o no pertenece al usuario.', 404);
+        }
+
+        const { usuario_id, total, fecha, nombre_negocio } = compra[0];
+
+        // Obtener el detalle de la compra
+        const [detalle] = await db.query(`
+            SELECT dc.producto_id, dc.cantidad, dc.precio_unitario, p.nombre
+            FROM detalle_compras AS dc
+            JOIN productos AS p ON dc.producto_id = p.id
+            WHERE dc.historial_id = ?
+        `, [numero_venta]);
+
+        if (!detalle.length) {
+            return enviarError(res, 'No se encontraron productos para esta compra.', 404);
+        }
+
+        // Construir el ticket
+        const ticket = {
+            nombre_negocio: "Panadería la Desesperanza",
+            fecha,
+            numero_venta,
+            productos: detalle.map(item => ({
+                producto: item.nombre,
+                cantidad: item.cantidad,
+                precio_unitario: item.precio_unitario,
+                subtotal: item.cantidad * item.precio_unitario,
+            })),
+            total,
+        };
+
+        res.json(ticket);
+    } catch (error) {
+        console.error('Error al generar el ticket:', error);
+        return enviarError(res, 'Error al generar el ticket.', 500);
+    }
+});
+
+app.get('/historial-compras', verifyToken, async (req, res) => {
+    const usuario_id = req.user.id;
+
+    try {
+        const [historial] = await db.query(`
+            SELECT hc.id, hc.total, hc.fecha, 
+                   GROUP_CONCAT(CONCAT(dc.cantidad, 'x ', p.nombre) SEPARATOR ', ') AS detalle
+            FROM historial_compras hc
+            JOIN detalle_compras dc ON hc.id = dc.historial_id
+            JOIN productos p ON dc.producto_id = p.id
+            WHERE hc.usuario_id = ?
+            GROUP BY hc.id
+            ORDER BY hc.fecha DESC
+        `, [usuario_id]);
+
+        if (!historial.length) {
+            return enviarError(res, 'No se encontraron compras.', 404);
+        }
+
+        res.json(historial);
+    } catch (error) {
+        console.error('Error al obtener el historial:', error);
+        return enviarError(res, 'Error al obtener el historial.', 500);
+    }
+});
+
+app.get('/admin/historial-compras', verifyToken, verifyAdmin, async (req, res) => {
+    const { usuario_id, fecha_inicio, fecha_fin } = req.query;
+
+    let query = `
+        SELECT hc.id, hc.total, hc.fecha, u.nombre_usuario,
+               GROUP_CONCAT(CONCAT(dc.cantidad, 'x ', p.nombre) SEPARATOR ', ') AS detalle
+        FROM historial_compras hc
+        JOIN usuarios u ON hc.usuario_id = u.id
+        JOIN detalle_compras dc ON hc.id = dc.historial_id
+        JOIN productos p ON dc.producto_id = p.id
+    `;
+    const params = [];
+
+    if (usuario_id || fecha_inicio || fecha_fin) {
+        query += 'WHERE ';
+        if (usuario_id) {
+            query += 'hc.usuario_id = ? ';
+            params.push(usuario_id);
+        }
+        if (fecha_inicio) {
+            query += (params.length ? 'AND ' : '') + 'hc.fecha >= ? ';
+            params.push(fecha_inicio);
+        }
+        if (fecha_fin) {
+            query += (params.length ? 'AND ' : '') + 'hc.fecha <= ? ';
+            params.push(fecha_fin);
+        }
+    }
+
+    query += 'GROUP BY hc.id ORDER BY hc.fecha DESC';
+
+    try {
+        const [historial] = await db.query(query, params);
+
+        if (!historial.length) {
+            return enviarError(res, 'No se encontraron compras.', 404);
+        }
+
+        res.json(historial);
+    } catch (error) {
+        console.error('Error al obtener el historial como administrador:', error);
+        return enviarError(res, 'Error al obtener el historial.', 500);
+    }
+});
+
+
 // Agregar producto al carrito
 app.post('/carrito', verifyToken, async (req, res) => {
     const { producto_id, cantidad } = req.body;
@@ -240,6 +364,45 @@ app.post('/carrito', verifyToken, async (req, res) => {
         return enviarError(res, 'Error al agregar producto al carrito.', 500);
     }
 });
+app.post('/agregar-fondos', verifyToken, async (req, res) => {
+    let { monto } = req.body;
+    const usuario_id = req.user.id;
+
+
+    // Asegurarse de que el monto es un número válido
+    monto = parseFloat(monto);  // Convierte el monto a número flotante
+
+    if (isNaN(monto) || monto <= 0) {
+        return enviarError(res, 'El monto debe ser un número positivo mayor que cero.', 400);
+    }
+
+    // Verificar que el monto no supere el límite
+    if (monto > 999999999999) {
+        return enviarError(res, 'El monto no puede superar los 999,999,999,999 pesos.', 400);
+    }
+
+    try {
+        const [usuario] = await db.query('SELECT fondos FROM usuarios WHERE id = ?', [usuario_id]);
+        if (!usuario.length) {
+            return enviarError(res, 'Usuario no encontrado.', 404);
+        }
+
+        // Actualizar fondos
+        const nuevosFondos = parseFloat(usuario[0].fondos) + monto;
+
+        if (monto > 0) {
+        await db.query('UPDATE usuarios SET fondos = ? WHERE id = ?', [nuevosFondos, usuario_id]);
+        res.status(200).json({ message: 'Fondos agregados correctamente.' });
+        } else {
+            return enviarError(res, 'No se puede agregar más fondos si el saldo es 0.', 400);
+        }
+
+    } catch (error) {
+        console.error('Error al agregar fondos:', error);
+        return enviarError(res, 'Error al agregar fondos.', 500);
+    }
+});
+
 
 // Procesar compra
 app.post('/comprar',verifyToken, async (req, res) => {
@@ -278,6 +441,7 @@ app.post('/comprar',verifyToken, async (req, res) => {
         return enviarError(res, 'Error al procesar la compra.', 500);
     }
 });
+
 
 // Iniciar servidor
 const port = process.env.PORT || 3000;
